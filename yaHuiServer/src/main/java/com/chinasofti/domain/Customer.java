@@ -74,8 +74,14 @@ public class Customer implements Serializable{
 
 	@Override
 	public String toString() {
-		return "客户编号:" + userId + "\n客户姓名:" + userName + "\n账号:" + account + "\n会员卡状态:" + (this.v.getcardState() ==0?"正常":"已挂失")
-				+ "\n会员卡号:" + v.getCardId() +"\n会员等级:"+v.getLev()+"\n余额:"+v.getBalance();
+		if(this.v.getCardId()==0){
+			return "客户编号:" + userId + "\n客户姓名:" + userName + 
+					"\n账号:" + account + "\n用户状态:" + (this.userState ==0?"已冻结":"正常");
+		}else{
+			return "客户编号:" + userId + "\n客户姓名:" + userName + "\n账号:" + account + "\n用户状态:" + (this.userState==0?"已挂失":"正常")
+					+ "\n会员卡号:" + v.getCardId() +"\n会员卡状态"+(this.v.getCardState() ==0?"已挂失":"正常")+"\n会员等级:"+v.getLev()+"\n余额:"+v.getBalance();
+		}
+		
 	}
 	
 	

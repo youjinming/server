@@ -28,5 +28,7 @@ public interface CustomerDao {
 	public boolean topUp(int userId,double money); 
 	
 	//结账
-	public Po settle(Customer c,Map<Food, Integer> m,double getMoney);
+	public Po settle(Customer c,Map<Food, Integer> m,double getMoney, double sumprice);
+
+	public boolean addCustomer(Customer customer);
 }

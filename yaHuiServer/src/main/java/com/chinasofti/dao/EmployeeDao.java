@@ -35,8 +35,12 @@ public interface EmployeeDao {
 	public boolean replace(int cId);
 	
 	//查询各个菜品月销量
-	public Map<String, Integer> sale();
+	public Map<Food, Integer> sale();
 	
 	//查看最受欢迎的菜品
 	public Food favorite();
+
+	public boolean modifyVipDis(int lev, double dis);
+
+	public boolean relieveUser(int userId);
 }

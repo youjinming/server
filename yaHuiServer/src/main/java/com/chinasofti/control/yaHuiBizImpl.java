@@ -27,6 +27,10 @@ public class yaHuiBizImpl implements yaHuiBiz {
 		this.eBiz = new EmployeeBizImpl();
 		this.fBiz = new FoodBizImpl();
 	}
+	
+	public String addCustomer(String userName,String account,String password) {
+		return this.cBiz.addCustomer(userName,account,password);
+	}
 
 	public Customer cLogin(String account, String password) {
 		return this.cBiz.cLogin(account, password);
@@ -52,12 +56,9 @@ public class yaHuiBizImpl implements yaHuiBiz {
 		return this.cBiz.topUp(userId, money);
 	}
 
-	public Po settle(Customer c, Map<Food, Integer> m,double getMoney) {
-		return this.cBiz.settle(c, m,getMoney);
+	public Po settle(Customer c, Map<Food, Integer> m,double getMoney,double sumprice) {
+		return this.cBiz.settle(c, m,getMoney,sumprice);
 	}
-
-	
-	
 	
 	public Employee eLogin(String account, String password) {
 		return this.eBiz.eLogin(account, password);
@@ -95,11 +96,11 @@ public class yaHuiBizImpl implements yaHuiBiz {
 		return this.eBiz.replace(cardId);
 	}
 
-	public Map<String, Integer> sale() {
+	public Map<Food, Integer> sale() {
 		return this.eBiz.sale();
 	}
 
-	public String favorite() {
+	public Food favorite() {
 		return this.eBiz.favorite();
 	}
 
@@ -122,5 +123,15 @@ public class yaHuiBizImpl implements yaHuiBiz {
 	public String removeFood(int fId) {
 		return this.fBiz.removeFood(fId);
 	}
+
+	public String modifyVipDis(int lev, double dis) {
+		return this.eBiz.modifyVipDis(lev,dis);
+	}
+
+	public String relieveUser(int userId) {
+		return this.eBiz.relieveUser(userId);
+	}
+
+
 
 }

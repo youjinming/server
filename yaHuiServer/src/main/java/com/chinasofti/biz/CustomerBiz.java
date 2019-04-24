@@ -8,6 +8,9 @@ import com.chinasofti.domain.Food;
 import com.chinasofti.domain.Po;
 
 public interface CustomerBiz {
+	//新增客户
+	public String addCustomer(String userName, String account, String password);
+	
 	//客户登录验证
 	public Customer cLogin(String account,String password);
 	
@@ -27,5 +30,7 @@ public interface CustomerBiz {
 	public String topUp(int userId,double money); 
 	
 	//结账
-	public Po settle(Customer c,Map<Food, Integer> m,double getMoney);
+	public Po settle(Customer c,Map<Food, Integer> m,double getMoney, double sumprice);
+
+	
 }

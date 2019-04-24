@@ -7,6 +7,7 @@ import com.chinasofti.biz.EmployeeBiz;
 import com.chinasofti.dao.EmployeeDao;
 import com.chinasofti.dao.impl.EmployeeDaoImpl;
 import com.chinasofti.domain.Employee;
+import com.chinasofti.domain.Food;
 
 public class EmployeeBizImpl implements EmployeeBiz{
 	EmployeeDao edao = new EmployeeDaoImpl();
@@ -44,15 +45,23 @@ public class EmployeeBizImpl implements EmployeeBiz{
 	}
 
 	public String replace(int cId) {
-		return this.replace(cId);
+		return this.edao.replace(cId)?"补办成功":"补办失败";
 	}
 
-	public Map<String, Integer> sale() {
+	public Map<Food, Integer> sale() {
 		return this.edao.sale();
 	}
 
-	public String favorite() {
-		return this.edao.favorite().getfName();
+	public Food favorite() {
+		return this.edao.favorite();
+	}
+
+	public String modifyVipDis(int lev, double dis) {
+		return this.edao.modifyVipDis(lev,dis)?"修改成功":"修改失败";
+	}
+
+	public String relieveUser(int userId) {
+		return this.edao.relieveUser(userId)?"解冻成功":"解冻失败";
 	}
 	
 }

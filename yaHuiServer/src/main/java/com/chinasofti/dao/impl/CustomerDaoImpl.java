@@ -20,13 +20,26 @@ public class CustomerDaoImpl implements CustomerDao {
 	
 	private DBUtil db;
 	
+	public boolean addCustomer(Customer customer) {
+		db = new DBUtil();
+		String sql = "insert into customer(userId,userName,account,password,state) values(seq_cust.nextval,?,?,?,1)";
+		try {
+			int i = this.db.update(sql, customer.getUserName(),customer.getAccount(),customer.getPassword());
+			return i>0;
+		} catch (SQLException e) {
+			return false;
+		} finally {
+			this.db.closed();
+		}
+	}
+	
 	public Customer cLogin(String account, String password) {
 		db = new DBUtil();
 		try {
 			String sql = "select  a.*,v.cardid,v.balance,v.lev,v.state,d.dis from customer a,viptable v,dis d where  a.userid=v.userid(+) and v.lev=d.lev(+) and a.account=? and a.password=?";
 			ResultSet rs = this.db.query(sql,account,password);
 			while(rs.next()){
-				Customer c = new Customer(rs.getInt("userId"), rs.getString("userName"), rs.getString("account"), rs.getString("password"), rs.getInt("userstate"), new Vip(rs.getInt("cardId"), rs.getInt("lev"), rs.getDouble("balance"), rs.getInt("State"),rs.getDouble("dis")));
+				Customer c = new Customer(rs.getInt("userId"), rs.getString("userName"), rs.getString("account"), rs.getString("password"), rs.getInt("state"), new Vip(rs.getInt("cardId"), rs.getInt("lev"), rs.getDouble("balance"), rs.getInt("State"),rs.getDouble("dis")));
 				return c;
 			}
 
@@ -60,7 +73,7 @@ public class CustomerDaoImpl implements CustomerDao {
 		try {
 			ResultSet rs = this.db.query(sql);
 			while(rs.next()){
-				Customer c = new Customer(rs.getInt("userId"), rs.getString("userName"), rs.getString("account"), rs.getString("password"), rs.getInt("userstate"), new Vip(rs.getInt("cardId"), rs.getInt("lev"), rs.getDouble("balance"), rs.getInt("State"),rs.getDouble("dis")));
+				Customer c = new Customer(rs.getInt("userId"), rs.getString("userName"), rs.getString("account"), rs.getString("password"), rs.getInt("state"), new Vip(rs.getInt("cardId"), rs.getInt("lev"), rs.getDouble("balance"), rs.getInt("State"),rs.getDouble("dis")));
 				list.add(c);
 			}
 			return list;
@@ -85,8 +98,8 @@ public class CustomerDaoImpl implements CustomerDao {
 
 	public boolean beVip(int userId, int lv) {
 		Customer c = this.findCustById(userId);
-		String sql = "select * from vipTable where userId="+userId;
 		try {
+			String sql = "select * from vipTable where userId="+userId;
 			db = new DBUtil();
 			ResultSet rs = this.db.query(sql);
 			if(rs.next()){
@@ -135,16 +148,21 @@ public class CustomerDaoImpl implements CustomerDao {
 		return false;
 	}
 
-	public Po settle(Customer c, Map<Food,Integer> m,double getMoney) {
+	public Po settle(Customer c, Map<Food,Integer> m,double getMoney,double sumprice) {
+		db = new DBUtil();
 		String uuId = UUID.randomUUID().toString().replaceAll("-", "");
-		Po p = new Po(uuId, c.getV().getCardId(), getMoney, m);
+		Po p = new Po(uuId, c.getUserId(), getMoney, m);
 		try {
-			String sql = "insert into Po(uuid,oTime,cardId,getMoney) values(?,to_date(?,'yyyy-mm-dd HH24:MI:SS'),?,?)";
-			this.db.update(sql, uuId,c.getV().getCardId(),p.getGetMoney());
+			String sql = "insert into Po(uuid,oTime,userId,getMoney) values(?,to_date(?,'yyyy-mm-dd HH24:MI:SS'),?,?)";
+			this.db.update(sql, uuId,p.getoTime(),c.getUserId(),p.getGetMoney());
 			String sql1 = "insert into volumn(uuid,fid,num) values(?,?,?)";
 			Set<Food> s = m.keySet();
 			for (Food f : s) {
 				this.db.update(sql1, p.getUuId(),f.getfId(),m.get(f));
+			}
+			if(c.getV()!=null){
+				String sql2="update viptable set balance = ? where cardid=?";
+				this.db.update(sql2, c.getV().getBalance()-sumprice,c.getV().getCardId());
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

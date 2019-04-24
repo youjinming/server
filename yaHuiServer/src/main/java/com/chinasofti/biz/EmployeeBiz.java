@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.chinasofti.domain.Employee;
+import com.chinasofti.domain.Food;
 
 public interface EmployeeBiz {
 	//员工登录验证
@@ -34,8 +35,12 @@ public interface EmployeeBiz {
 	public String replace(int cId);
 	
 	//查询各个菜品月销量
-	public Map<String, Integer> sale();
+	public Map<Food, Integer> sale();
 	
 	//查看最受欢迎的菜品
-	public String favorite();
+	public Food favorite();
+
+	public String modifyVipDis(int lev, double dis);
+
+	public String relieveUser(int userId);
 }

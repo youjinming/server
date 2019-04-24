@@ -47,14 +47,6 @@ public class Vip implements Serializable{
 		this.balance = balance;
 	}
 
-	public int getcardState() {
-		return cardState;
-	}
-
-	public void setState(int cardState) {
-		this.cardState = cardState;
-	}
-
 	public int getCardState() {
 		return cardState;
 	}

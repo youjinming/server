@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.chinasofti.dao.EmployeeDao;
 import com.chinasofti.domain.Employee;
@@ -22,7 +23,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		try {
 			ResultSet rs = this.db.query(sql, account,password);
 			while(rs.next()){
-				Employee e = new Employee(rs.getInt("empId"), rs.getString("empName"), rs.getString("account"), rs.getString("account"), rs.getInt("mgr"));
+				Employee e = new Employee(rs.getInt("empId"), rs.getString("empName"), rs.getString("account"), rs.getString("password"), rs.getInt("mgr"));
 				return e;
 			}
 		} catch (SQLException e) {
@@ -104,7 +105,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 	public boolean freezeUser(int userId) {
 		db = new DBUtil();
-		String sql = "update customer set userstate=0 where userId="+userId;
+		String sql = "update customer set state=0 where userId="+userId;
 		try {
 			int i = this.db.update(sql);
 			return i>0;
@@ -130,9 +131,16 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 	public boolean replace(int cId) {
 		db = new DBUtil();
-		String sql = "update viptable set state=1 where cId="+cId;
 		try {
-			int i = this.db.update(sql);
+			String sql = "select state from viptable where cardid="+cId;
+			ResultSet rs = this.db.query(sql);
+			if(rs.next()){
+				if(rs.getInt("state")==1){
+					return false;
+				}
+			}
+			String sql1 = "update viptable set state=1 where cardid="+cId;
+			int i = this.db.update(sql1);
 			return i>0;
 		} catch (SQLException e) {
 			return false;
@@ -141,14 +149,14 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		}
 	}
 
-	public Map<String, Integer> sale() {
+	public Map<Food, Integer> sale() {
 		db = new DBUtil();
-		Map<String, Integer> m = new HashMap<String, Integer>();
-		String sql = "select f.fname,sum(num) from Food f,volumn v where f.fid=v.fid group by fname";
+		Map<Food, Integer> m = new HashMap<Food, Integer>();
+		String sql = "select f.fname,f.fid,f.price,f.tid,f.dis,NVL(sum(num),0) num from Food f,volumn v where f.fid=v.fid(+) group by fname,f.fid,f.price,f.tid,f.dis";
 		try {
 			ResultSet rs = this.db.query(sql);
 			while(rs.next()){
-				m.put(rs.getString("fname"), rs.getInt("num"));
+				m.put(new Food(rs.getInt("fId"), rs.getString("fName"), rs.getDouble("price"), rs.getInt("tId"), rs.getDouble("dis")), rs.getInt("num"));
 			}
 			return m;
 		} catch (SQLException e) {
@@ -159,15 +167,43 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	}
 
 	public Food favorite() {
-		Map<String, Integer> m = this.sale();
-		Food f = new Food();
-		int max=m.get(0);
-		for (int i = 1; i < m.size(); i++) {
-			if(m.get(i)>max){
-				
+		Map<Food, Integer> m = this.sale();
+		Set<Food> set = m.keySet();
+		int max=0;
+		Food f = null;
+		for (Food food : set) {
+			if(m.get(food)>max){
+				max=m.get(food);
+				f=food;
 			}
 		}
-		return null;
+		return f;
+	}
+
+	public boolean modifyVipDis(int lev, double dis) {
+		db = new DBUtil();
+		String sql = "update dis set dis=? where lev="+lev;
+		try {
+			int i = this.db.update(sql,dis);
+			return i>0;
+		} catch (SQLException e) {
+			return false;
+		} finally {
+			this.db.closed();
+		}
+	}
+
+	public boolean relieveUser(int userId) {
+		db = new DBUtil();
+		String sql = "update customer set state=1 where userId="+userId;
+		try {
+			int i = this.db.update(sql);
+			return i>0;
+		} catch (SQLException e) {
+			return false;
+		} finally {
+			this.db.closed();
+		}
 	}
 
 }

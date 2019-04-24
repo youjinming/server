@@ -1,13 +1,14 @@
 package com.chinasofti.domain;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-public class Po {
+public class Po implements Serializable{
 	private String uuId;
 	private String oTime;
-	private int cardId;
+	private int userId;
 	private double getMoney;
 	private Map<Food,Integer> goods;
 	
@@ -15,13 +16,13 @@ public class Po {
 		super();
 	}
 
-	public Po(String uuId, int cardId, double getMoney, Map<Food,Integer> goods) {
+	public Po(String uuId, int userId, double getMoney, Map<Food,Integer> goods) {
 		super();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		oTime=df.format(new Date());
 		this.uuId = uuId;
 		this.oTime = df.format(new Date());
-		this.cardId=cardId;
+		this.userId=userId;
 		this.getMoney = getMoney;
 		this.goods = goods;
 	}
@@ -42,12 +43,12 @@ public class Po {
 		this.oTime = oTime;
 	}
 
-	public int getCardID() {
-		return cardId;
+	public int getuserId() {
+		return userId;
 	}
 
-	public void setCardId(int cardId) {
-		this.cardId = cardId;
+	public void setuserId(int userId) {
+		this.userId = userId;
 	}
 
 	public double getGetMoney() {
